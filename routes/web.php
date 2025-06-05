@@ -3,8 +3,8 @@
 use App\Http\Controllers\StudentsController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/students', [StudentsController::class, 'index']);
+// View all data
+Route::get('/', [StudentsController::class, 'index']);
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+// Create/Add new data
+Route::post('/create-new', [StudentsController::class, 'createNewSTD'])->name('student.create');

@@ -14,8 +14,9 @@ class StudentsTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('students')->insert([
-            ['name' => 'Ariane Ko', 'age' => 24],
-            ['name' => 'Ariane gyapon ko', 'age' => 24],
+            ['name' => 'Ariane Ko', 'age' => 24, 'gender' => 'male', 'address' => '123 Main St'],
+            ['name' => 'Ariane gyapon ko', 'age' => 24, 'gender' => 'male gyapon', 'address' => 'Cebu'],
+            ['name' => 'Siya ra', 'age' => 19, 'gender' => 'female', 'address' => 'Dumagueete'],
         ]);
     }
 }
