@@ -34,4 +34,32 @@ class StudentsController extends Controller
 
         return back()->with('success', 'Student added successfully!');
     }
+
+    public function updateSTD(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'age' => 'required',
+            'gender' => 'required',
+            'address' => 'required'
+        ]);
+
+        $student = Students::findOrFail($request->route('id'));
+
+        $student->name = $request->name;
+        $student->age = $request->age;
+        $student->gender = $request->gender;
+        $student->address = $request->address;
+        $student->save();
+
+        return redirect()->route('student.viewAll')->with('success', 'Student updated successfully!');
+    }
+
+    public function deleteSTD(Request $request)
+    {
+        $student = Students::findOrFail($request->id);
+        $student->delete();
+
+        return redirect()->route('student.viewAll')->with('success', 'Student deleted successfully!');
+    }
 }

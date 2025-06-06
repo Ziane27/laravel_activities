@@ -1,5 +1,5 @@
 @extends('base')
-@section(section: 'title', content: 'Ariane University - Student Management')
+@section('title', 'Ariane University - Student Management')
 @section('content')
 
     <div class="container py-5">
@@ -33,7 +33,6 @@
                                 <th class="table-cell-align actions-cell text-end">Actions</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             @forelse ($students as $student)
                                 <tr>
@@ -43,7 +42,17 @@
                                     <td class="table-cell-align">{{ $student->gender }}</td>
                                     <td class="table-cell-align">{{ $student->address }}</td>
                                     <td class="actions-cell">
-                                        
+                                        <div class="action-buttons d-flex justify-content-end">
+                                            <button type="button" class="action-button btn btn-sm btn-outline-primary"
+                                                data-bs-toggle="modal" data-bs-target="#editModal{{ $student->id }}"
+                                                title="Edit Student">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="action-button btn btn-sm btn-outline-danger ms-2"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal{{ $student->id }}"
+                                                title="Delete Student">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -56,33 +65,114 @@
                                 </tr>
                             @endforelse
                         </tbody>
-
                     </table>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Create/Add studet modal-->
-        <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel"
-            aria-hidden="true">
+    <!-- Create/Add Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0">
+                <div class="modal-header border-bottom-0 bg-light">
+                    <h5 class="modal-title" id="addStudentModalLabel">
+                        <i class="bi bi-person-plus me-2"></i>Add New Student
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 py-4">
+                    <form method="post" action="{{ route('student.create') }}" class="needs-validation" novalidate>
+                        @csrf
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        name="name" value="{{ old('name') }}" id="nameInput" placeholder="Enter name"
+                                        required>
+                                    <label for="nameInput">Full Name</label>
+                                    @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control @error('age') is-invalid @enderror"
+                                        name="age" value="{{ old('age') }}" id="ageInput" placeholder="Enter age"
+                                        required>
+                                    <label for="ageInput">Age</label>
+                                    @error('age')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select @error('gender') is-invalid @enderror" name="gender"
+                                        id="genderInput" required>
+                                        <option value="" selected disabled>Select gender</option>
+                                        <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male
+                                        </option>
+                                        <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female
+                                        </option>
+                                    </select>
+                                    <label for="genderInput">Gender</label>
+                                    @error('gender')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control @error('address') is-invalid @enderror" name="address" id="addressInput"
+                                        style="height: 100px" placeholder="Enter address" required>{{ old('address') }}</textarea>
+                                    <label for="addressInput">Complete Address</label>
+                                    @error('address')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save me-2"></i>Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Update/Edit Modal -->
+    @foreach ($students as $student)
+        <div class="modal fade" id="editModal{{ $student->id }}" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0">
                     <div class="modal-header border-bottom-0 bg-light">
-                        <h5 class="modal-title" id="addStudentModalLabel">
-                            <i class="bi bi-person-plus me-2"></i>Add New Student
+                        <h5 class="modal-title">
+                            <i class="bi bi-pencil-square me-2"></i>Edit Student
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body px-4 py-4">
-                        <form method="post" action="{{ route('student.create') }}" class="needs-validation" novalidate>
+                        <form action="{{ route('student.update', $student->id) }}" method="POST"
+                            class="needs-validation" novalidate>
                             @csrf
+                            @method('PUT')
                             <div class="row g-4">
                                 <div class="col-12">
                                     <div class="form-floating">
                                         <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                            name="name" value="{{ old('name') }}" id="nameInput"
-                                            placeholder="Enter name" required>
-                                        <label for="nameInput">Full Name</label>
+                                            name="name" value="{{ old('name', $student->name) }}"
+                                            id="editNameInput{{ $student->id }}" placeholder="Enter name" required>
+                                        <label for="editNameInput{{ $student->id }}">Full Name</label>
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -92,9 +182,9 @@
                                 <div class="col-md-6">
                                     <div class="form-floating">
                                         <input type="number" class="form-control @error('age') is-invalid @enderror"
-                                            name="age" value="{{ old('age') }}" id="ageInput"
-                                            placeholder="Enter age" required>
-                                        <label for="ageInput">Age</label>
+                                            name="age" value="{{ old('age', $student->age) }}"
+                                            id="editAgeInput{{ $student->id }}" placeholder="Enter age" required>
+                                        <label for="editAgeInput{{ $student->id }}">Age</label>
                                         @error('age')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -104,14 +194,16 @@
                                 <div class="col-md-6">
                                     <div class="form-floating">
                                         <select class="form-select @error('gender') is-invalid @enderror" name="gender"
-                                            id="genderInput" required>
-                                            <option value="" selected disabled>Select gender</option>
-                                            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male
+                                            id="editGenderInput{{ $student->id }}" required>
+                                            <option value="" disabled>Select gender</option>
+                                            <option value="Male"
+                                                {{ old('gender', $student->gender) == 'Male' ? 'selected' : '' }}>Male
                                             </option>
-                                            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female
-                                            </option>
+                                            <option value="Female"
+                                                {{ old('gender', $student->gender) == 'Female' ? 'selected' : '' }}>
+                                                Female</option>
                                         </select>
-                                        <label for="genderInput">Gender</label>
+                                        <label for="editGenderInput{{ $student->id }}">Gender</label>
                                         @error('gender')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -120,9 +212,9 @@
 
                                 <div class="col-12">
                                     <div class="form-floating">
-                                        <textarea class="form-control @error('address') is-invalid @enderror" name="address" id="addressInput"
-                                            style="height: 100px" placeholder="Enter address" required>{{ old('address') }}</textarea>
-                                        <label for="addressInput">Complete Address</label>
+                                        <textarea class="form-control @error('address') is-invalid @enderror" name="address"
+                                            id="editAddressInput{{ $student->id }}" style="height: 100px" placeholder="Enter address" required>{{ old('address', $student->address) }}</textarea>
+                                        <label for="editAddressInput{{ $student->id }}">Complete Address</label>
                                         @error('address')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -133,7 +225,7 @@
                             <div class="d-flex justify-content-end gap-2 mt-4">
                                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                                 <button type="submit" class="btn btn-primary px-4">
-                                    <i class="bi bi-save me-2"></i>Save
+                                    <i class="bi bi-save me-2"></i>Update
                                 </button>
                             </div>
                         </form>
@@ -141,3 +233,39 @@
                 </div>
             </div>
         </div>
+
+        <!-- Delete/Remove Confirmation Modal -->
+        <div class="modal fade" id="deleteModal{{ $student->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content border-0">
+                    <div class="modal-header border-bottom-0 bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="bi bi-exclamation-triangle me-2"></i>Delete Student
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <i class="bi bi-trash text-danger fs-1 mb-3"></i>
+                        <p class="mb-0">Are you sure you want to delete this student?</p>
+                        <p class="small text-muted mb-0">This action cannot be undone.</p>
+                    </div>
+                    <div class="modal-footer border-top-0">
+                        <form action="{{ route('student.delete', $student->id) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-danger px-4">
+                                    <i class="bi bi-trash me-2"></i>Delete
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+    </div>
+
+@endsection
