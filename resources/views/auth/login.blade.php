@@ -16,7 +16,7 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="text-center"><strong>Login</strong></h4>
+                        <h4 class="text-center"><strong>Login as Administrator</strong></h4>
                     </div>
 
                     @if (session('success'))
@@ -53,6 +53,9 @@
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Login</button>
                         </form>
+                        <div class="mt-3 text-center">
+                            <a href="{{ route('auth.register') }}">Register</a>
+                        </div>
                     </div>
                 </div>
             </div>

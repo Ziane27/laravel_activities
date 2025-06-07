@@ -16,6 +16,21 @@
                 <i class="bi bi-plus-circle"></i>
                 Add New Student
             </button>
+
+            <!-- Success Alert -->
+            @if (session('success'))
+                <script>
+                    alert("{{ session('success') }}");
+                </script>
+            @endif
+
+            <!-- Logout Button -->
+            <form action="{{ route('auth.logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 px-3 py-2">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </form>
         </div>
 
         <!-- Table Card -->
@@ -268,6 +283,35 @@
     @endforeach
     </div>
 
-    
+    @push('scripts')
+        <script>
+            // Form validation
+            (() => {
+                'use strict'
+                const forms = document.querySelectorAll('.needs-validation')
+                Array.from(forms).forEach(form => {
+                    form.addEventListener('submit', event => {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+            })()
 
+            // Auto-dismiss alert
+            document.addEventListener('DOMContentLoaded', function() {
+                const alert = document.getElementById('successAlert');
+                if (alert) {
+                    setTimeout(() => {
+                        alert.classList.add('fade-out');
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 500); // Wait for animation to complete
+                    }, 5000); // 5 seconds delay
+                }
+            });
+        </script>
+    @endpush
 @endsection

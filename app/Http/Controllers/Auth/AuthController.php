@@ -15,7 +15,9 @@ class AuthController extends Controller
     // Login
     public function index()
     {
-        
+        if (Session::has('loginId')) {
+            return redirect()->route('student.viewAll');
+        }
         return view('auth.login');
     }
 
@@ -38,6 +40,37 @@ class AuthController extends Controller
         }
     }
 
-    
-    
+    // Register
+    public function indexRegister()
+    {
+        if (Session::has('loginId')) {
+            return redirect()->route('student.myWelcomeView');
+        }
+        return view('auth.register');
+    }
+
+    public function userRegister(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+
+        $input['name'] = $request->name;
+        $input['email'] = $request->email;
+        $input['password'] = bcrypt($request->password);
+        User::create($input);
+
+        return redirect()->route('auth.index')->with('success', 'Registered successfully! Please login to continue.');
+    }
+
+    // Logout
+    public function logout(Request $request)
+    {
+        Session::flush();     // Clear all session data
+        Auth::logout();       // Log out user
+
+        return redirect()->route('auth.index'); // Redirect to login
+    }
 }
